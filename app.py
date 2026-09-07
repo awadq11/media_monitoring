@@ -14,7 +14,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# كود CSS المحدث لإخفاء الشارة وتلوين عنوان البحث باللون الأحمر
+# كود CSS المحدث للتنسيقات العامة
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
@@ -27,11 +27,6 @@ st.markdown("""
     .stToolbar {visibility: hidden !important; display: none !important;}
     [data-testid="stDecoration"] {display: none !important;}
     [data-testid="stStatusWidget"] {visibility: hidden !important; display: none !important;}
-    
-    div[data-testid="stToolbar"], div.viewerBadge_container__1QSob, .viewerBadge_link__1S137, div[class*="viewerBadge"] {
-        display: none !important;
-        visibility: hidden !important;
-    }
     
     [data-testid="stSidebar"] { background-color: #121816; border-left: 1px solid #1f2c27; }
     .main-title { text-align: center; color: #ffffff; font-weight: 900; font-size: 2.2rem; padding: 10px 0; }
@@ -200,21 +195,25 @@ if not df.empty:
 else:
     st.warning("⚠️ لا توجد أخبار مرصودة حالياً.")
 
-# كود جافا سكريبت في نهاية الملف لإزالة الشارة العائمة بشكل نهائي
+# الحل النهائي والجذري لإخفاء شارة Streamlit العائمة من جذورها عبر المتصفح
 components.html(
     """
     <script>
-    const removeBadge = () => {
+    function removeStBadge() {
         try {
-            const doc = window.parent.document;
-            const badges = doc.querySelectorAll('.viewerBadge_container__1QSob, div[class*="viewerBadge"], a[href*="streamlit.cloud"]');
-            badges.forEach(el => {
-                el.style.display = 'none';
-                el.remove();
+            const bodyElements = window.parent.document.querySelectorAll('div, a');
+            bodyElements.forEach(el => {
+                if (el.innerText && (el.innerText.includes('Hosted with Streamlit') || el.innerText.includes('Created by'))) {
+                    let target = el.closest('div[style*="position"]') || el.parentElement;
+                    if (target) {
+                        target.style.display = 'none';
+                        target.remove();
+                    }
+                }
             });
         } catch(e) {}
-    };
-    setInterval(removeBadge, 50);
+    }
+    setInterval(removeStBadge, 20);
     </script>
     """,
     height=0,
