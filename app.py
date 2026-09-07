@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# كود CSS المحدث لإخفاء شريط الأدوات والشارة الحمراء نهائياً بدون أخطاء
+# كود CSS المحدث لإخفاء الشارة الحمراء وتلوين العبارة باللون الأحمر
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
@@ -27,7 +27,6 @@ st.markdown("""
     [data-testid="stDecoration"] {display: none !important;}
     [data-testid="stStatusWidget"] {visibility: hidden !important; display: none !important;}
     
-    /* إخفاء الشارة الحمراء وشارة المطور العائمة */
     div[data-testid="stToolbar"], div.viewerBadge_container__1QSob, .viewerBadge_link__1S137, div[class*="viewerBadge"] {
         display: none !important;
         visibility: hidden !important;
@@ -36,6 +35,7 @@ st.markdown("""
     [data-testid="stSidebar"] { background-color: #121816; border-left: 1px solid #1f2c27; }
     .main-title { text-align: center; color: #ffffff; font-weight: 900; font-size: 2.2rem; padding: 10px 0; }
     .sub-banner { background: linear-gradient(135deg, #1B3B2B 0%, #0d1e15 100%); padding: 20px; border-radius: 12px; border: 1px solid #28543d; margin-bottom: 25px; text-align: center; color: #f0f4f1; }
+    .red-search-label { color: #ff4b4b; font-weight: 700; font-size: 1.1rem; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -134,7 +134,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 if not df.empty:
-    st.markdown("🔍 **البحث السريع في النتائج المرصودة:**")
+    st.markdown('<p class="red-search-label">🔍 البحث السريع في النتائج المرصودة:</p>', unsafe_allow_html=True)
     search_query = st.text_input("بحث برمز أو كلمة مفتاحية...", label_visibility="collapsed")
     if search_query:
         df = df[df['clean_title'].str.contains(search_query, case=False, na=False)]
