@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import os
 import base64
-import streamlit.components.v1 as components
 from database import get_db_connection, init_db
 from monitor import fetch_and_store_rss, classify_news
 
@@ -14,24 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# كود جافا سكريبت لإزالة شارة Streamlit والشارة العائمة نهائياً من DOM الصفحة
-components.html(
-    """
-    <script>
-    const hideBadge = () => {
-        try {
-            const body = window.parent.document.body;
-            const badges = body.querySelectorAll('a[href*="streamlit.cloud"], div[class*="viewerBadge"], [data-testid="stStatusWidget"], footer, [data-testid="stFooter"]');
-            badges.forEach(el => el.remove());
-        } catch(e) {}
-    };
-    setInterval(hideBadge, 100);
-    </script>
-    """,
-    height=0,
-)
-
-# كود CSS الشامل لإخفاء شريط الأدوات والعناصر الافتراضية
+# كود CSS المحدث لإخفاء شريط الأدوات والشارة الحمراء نهائياً بدون أخطاء
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
@@ -44,6 +26,12 @@ st.markdown("""
     .stToolbar {visibility: hidden !important; display: none !important;}
     [data-testid="stDecoration"] {display: none !important;}
     [data-testid="stStatusWidget"] {visibility: hidden !important; display: none !important;}
+    
+    /* إخفاء الشارة الحمراء وشارة المطور العائمة */
+    div[data-testid="stToolbar"], div.viewerBadge_container__1QSob, .viewerBadge_link__1S137, div[class*="viewerBadge"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
     
     [data-testid="stSidebar"] { background-color: #121816; border-left: 1px solid #1f2c27; }
     .main-title { text-align: center; color: #ffffff; font-weight: 900; font-size: 2.2rem; padding: 10px 0; }
