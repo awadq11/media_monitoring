@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# كود CSS المحدث لإخفاء شريط الأدوات العائم وأيقونات Streamlit نهائياً عن المستخدمين
+# كود CSS المحدث والشامل لإخفاء شريط الأدوات والشارة الحمراء وشارة المستخدم نهائياً
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
@@ -21,13 +21,24 @@ st.markdown("""
     
     header [kind="header"] { display: none !important; }
     
-    /* إخفاء شريط الأدوات العائم والأيقونات في الأسفل والأعلى */
+    /* إخفاء شريط الأدوات والشارة السفلية بالكامل */
     #MainMenu {visibility: hidden !important;}
     footer {visibility: hidden !important; display: none !important;}
-    [data-testid="stFooter"] {display: none !important;}
+    [data-testid="stFooter"] {display: none !important; visibility: hidden !important;}
     .stToolbar {visibility: hidden !important; display: none !important;}
     [data-testid="stDecoration"] {display: none !important;}
-    [data-testid="stStatusWidget"] {visibility: hidden !important;}
+    [data-testid="stStatusWidget"] {visibility: hidden !important; display: none !important;}
+    
+    /* إخفاء شارة Streamlit الحمراء وشارة المطور في الأسفل */
+    div[data-testid="stToolbar"] {display: none !important;}
+    div.viewerBadge_container__1QSob {display: none !important;}
+    .viewerBadge_link__1S137 {display: none !important;}
+    
+    /* محددات إضافية لإخفاء الأيقونات العائمة في الزاوية السفلية للمستخدمين */
+    .eczcs4n1, [class*="viewerBadge"], [class*="styles_viewerBadge"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
     
     [data-testid="stSidebar"] { background-color: #121816; border-left: 1px solid #1f2c27; }
     .main-title { text-align: center; color: #ffffff; font-weight: 900; font-size: 2.2rem; padding: 10px 0; }
