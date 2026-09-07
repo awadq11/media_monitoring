@@ -14,7 +14,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# كود CSS المحدث للتنسيقات العامة
+# كود CSS المحدث للتنسيقات وتغطية الشارة العائمة في الزاوية نهائياً
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
@@ -32,6 +32,19 @@ st.markdown("""
     .main-title { text-align: center; color: #ffffff; font-weight: 900; font-size: 2.2rem; padding: 10px 0; }
     .sub-banner { background: linear-gradient(135deg, #1B3B2B 0%, #0d1e15 100%); padding: 20px; border-radius: 12px; border: 1px solid #28543d; margin-bottom: 25px; text-align: center; color: #f0f4f1; }
     .red-search-label { color: #ff4b4b; font-weight: 700; font-size: 1.1rem; }
+
+    /* طبقة تغطية نهائية فوق شارة ستريملايت في الزاوية السفلية اليمنى */
+    body::after {
+        content: "";
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        width: 160px;
+        height: 55px;
+        background-color: #0e1117; 
+        z-index: 999999;
+        pointer-events: none;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -194,27 +207,3 @@ if not df.empty:
         st.download_button("📄 تحميل التقرير الرسمي (HTML / طباعة)", data=html_report, file_name="Report.html", mime="application/html", use_container_width=True)
 else:
     st.warning("⚠️ لا توجد أخبار مرصودة حالياً.")
-
-# الحل النهائي والجذري لإخفاء شارة Streamlit العائمة من جذورها عبر المتصفح
-components.html(
-    """
-    <script>
-    function removeStBadge() {
-        try {
-            const bodyElements = window.parent.document.querySelectorAll('div, a');
-            bodyElements.forEach(el => {
-                if (el.innerText && (el.innerText.includes('Hosted with Streamlit') || el.innerText.includes('Created by'))) {
-                    let target = el.closest('div[style*="position"]') || el.parentElement;
-                    if (target) {
-                        target.style.display = 'none';
-                        target.remove();
-                    }
-                }
-            });
-        } catch(e) {}
-    }
-    setInterval(removeStBadge, 20);
-    </script>
-    """,
-    height=0,
-)
