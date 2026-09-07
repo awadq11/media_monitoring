@@ -28,214 +28,157 @@ st.set_page_config(
 
 
 # ============================================================
-# إخفاء شعارات Streamlit من واجهة المستخدم
+# إخفاء شعارات Streamlit / Community Cloud
 # ============================================================
 
 components.html(
     """
     <script>
     (function () {
-
-        function hideStreamlitBranding() {
-
+        function getDocument() {
             try {
+                return window.top.document;
+            } catch (e) {
+                try {
+                    return window.parent.document;
+                } catch (e2) {
+                    return document;
+                }
+            }
+        }
 
-                const doc = window.parent.document;
+        function hideElement(el) {
+            if (!el) return;
 
+            el.style.setProperty("display", "none", "important");
+            el.style.setProperty("visibility", "hidden", "important");
+            el.style.setProperty("opacity", "0", "important");
+            el.style.setProperty("pointer-events", "none", "important");
+            el.style.setProperty("width", "0", "important");
+            el.style.setProperty("height", "0", "important");
+            el.style.setProperty("min-width", "0", "important");
+            el.style.setProperty("min-height", "0", "important");
+            el.setAttribute("aria-hidden", "true");
+        }
+
+        function hideBranding() {
+            try {
+                const doc = getDocument();
+
+                // إخفاء العناصر المعروفة في Streamlit
                 const selectors = [
-
-                    /* Hosted with Streamlit */
                     '[class*="viewerBadge"]',
-                    '[class*="viewerBadge_container"]',
-                    '[class*="viewerBadge_link"]',
-                    '[class*="viewerBadge_text"]',
-
-                    /* Deploy */
+                    '[class*="ViewerBadge"]',
+                    '[class*="stAppViewerBadge"]',
+                    '[data-testid="stAppViewerBadge"]',
                     '[data-testid="stAppDeployButton"]',
-                    'div[class*="stDeployButton"]',
-                    'div[class*="stAppDeployButton"]',
-
-                    /* Toolbar */
+                    '[class*="stDeployButton"]',
+                    '[class*="stAppDeployButton"]',
                     '[data-testid="stToolbar"]',
                     '[data-testid="stToolbarActions"]',
-
-                    /* Status */
-                    '[data-testid="stStatusWidget"]',
-
-                    /* Streamlit links */
-                    'a[href*="streamlit.io"]'
+                    'a[href*="streamlit.io"]',
+                    'a[href*="streamlit.app"]'
                 ];
 
-
-                selectors.forEach(function(selector) {
-
+                selectors.forEach(function (selector) {
                     try {
-
-                        const elements =
-                            doc.querySelectorAll(selector);
-
-                        elements.forEach(function(element) {
-
-                            element.style.setProperty(
-                                "display",
-                                "none",
-                                "important"
-                            );
-
-                            element.style.setProperty(
-                                "visibility",
-                                "hidden",
-                                "important"
-                            );
-
-                            element.style.setProperty(
-                                "opacity",
-                                "0",
-                                "important"
-                            );
-
-                            element.style.setProperty(
-                                "pointer-events",
-                                "none",
-                                "important"
-                            );
-
-                        });
-
+                        doc.querySelectorAll(selector).forEach(hideElement);
                     } catch (e) {}
-
                 });
 
+                // إخفاء الشعارات اعتماداً على النص الظاهر
+                const targetTexts = [
+                    "hosted with streamlit",
+                    "created by awadq11"
+                ];
 
-                /*
-                 * البحث عن النصوص الخاصة بالشارات
-                 * وإخفاء العنصر الأب إذا وجدناها.
-                 */
-
-                const allElements =
-                    doc.querySelectorAll("body *");
-
-
-                allElements.forEach(function(element) {
-
+                doc.querySelectorAll("body *").forEach(function (el) {
                     try {
-
-                        const text =
-                            (element.innerText || "")
+                        const text = (el.innerText || el.textContent || "")
+                            .replace(/\s+/g, " ")
                             .trim()
                             .toLowerCase();
 
+                        if (!text) return;
 
-                        if (
-                            text === "hosted with streamlit" ||
-                            text === "created by awadq11" ||
-                            text === "created by awadq11"
-                        ) {
+                        const matched = targetTexts.some(function (target) {
+                            return text === target || text.includes(target);
+                        });
 
-                            let parent = element;
+                        if (!matched) return;
 
-                            for (
-                                let i = 0;
-                                i < 6 && parent;
-                                i++
+                        // نص الشارة قد يكون داخل عدة طبقات، لذلك نصعد للأب
+                        let node = el;
+
+                        for (let i = 0; i < 8 && node; i++) {
+                            hideElement(node);
+
+                            if (
+                                node.tagName === "A" ||
+                                node.getAttribute("role") === "button" ||
+                                node.hasAttribute("data-testid") ||
+                                (node.children && node.children.length > 0)
                             ) {
-
-                                if (
-                                    parent.tagName === "DIV" ||
-                                    parent.tagName === "A" ||
-                                    parent.tagName === "BUTTON"
-                                ) {
-
-                                    parent.style.setProperty(
-                                        "display",
-                                        "none",
-                                        "important"
-                                    );
-
-                                    parent.style.setProperty(
-                                        "visibility",
-                                        "hidden",
-                                        "important"
-                                    );
-
-                                    parent.style.setProperty(
-                                        "opacity",
-                                        "0",
-                                        "important"
-                                    );
-
-                                    parent.style.setProperty(
-                                        "pointer-events",
-                                        "none",
-                                        "important"
-                                    );
-
-                                    break;
-                                }
-
-                                parent = parent.parentElement;
+                                break;
                             }
+
+                            node = node.parentElement;
                         }
-
                     } catch (e) {}
-
                 });
-
             } catch (e) {}
-
         }
 
-
-        /* تشغيل الإخفاء مباشرة */
-        hideStreamlitBranding();
-
-
-        /* إعادة المحاولة بعد تحميل الصفحة */
-        setTimeout(
-            hideStreamlitBranding,
-            300
-        );
-
-        setTimeout(
-            hideStreamlitBranding,
-            1000
-        );
-
-        setTimeout(
-            hideStreamlitBranding,
-            2000
-        );
-
-        setTimeout(
-            hideStreamlitBranding,
-            4000
-        );
-
-
-        /*
-         * مراقبة أي عناصر جديدة تضيفها Streamlit
-         */
-
+        // إضافة CSS إلى الصفحة الأم
         try {
+            const doc = getDocument();
 
-            const observer =
-                new MutationObserver(
-                    function () {
-                        hideStreamlitBranding();
+            if (!doc.getElementById("hide-streamlit-community-branding")) {
+                const style = doc.createElement("style");
+                style.id = "hide-streamlit-community-branding";
+                style.textContent = `
+                    [class*="viewerBadge"],
+                    [class*="ViewerBadge"],
+                    [class*="stAppViewerBadge"],
+                    [data-testid="stAppViewerBadge"],
+                    [data-testid="stAppDeployButton"],
+                    [class*="stDeployButton"],
+                    [class*="stAppDeployButton"],
+                    a[href*="streamlit.io"],
+                    a[href*="streamlit.app"] {
+                        display: none !important;
+                        visibility: hidden !important;
+                        opacity: 0 !important;
+                        pointer-events: none !important;
                     }
-                );
-
-
-            observer.observe(
-                window.parent.document.body,
-                {
-                    childList: true,
-                    subtree: true
-                }
-            );
-
+                `;
+                (doc.head || doc.documentElement).appendChild(style);
+            }
         } catch (e) {}
 
+        // المحاولة مباشرة وبعد اكتمال تحميل Streamlit
+        hideBranding();
+
+        [100, 300, 700, 1200, 2000, 3500, 5000, 8000, 12000].forEach(function (delay) {
+            setTimeout(hideBranding, delay);
+        });
+
+        // مراقبة أي عناصر تضيفها Streamlit لاحقاً
+        try {
+            const doc = getDocument();
+
+            const observer = new MutationObserver(function () {
+                hideBranding();
+            });
+
+            observer.observe(doc.documentElement, {
+                childList: true,
+                subtree: true
+            });
+
+            // حماية إضافية لمدة طويلة أثناء تشغيل التطبيق
+            setInterval(hideBranding, 1500);
+        } catch (e) {}
     })();
     </script>
     """,
@@ -1260,60 +1203,60 @@ else:
 
 
 # ============================================================
-# إعادة إخفاء الشعارات بعد اكتمال التطبيق
+# إعادة محاولة إخفاء شعارات Community Cloud بعد اكتمال التطبيق
 # ============================================================
 
 components.html(
     """
     <script>
+    (function () {
+        function hide() {
+            try {
+                const doc = window.top.document;
 
-    setTimeout(function () {
-
-        try {
-
-            const doc =
-                window.parent.document;
-
-
-            const selectors = [
-
-                '[class*="viewerBadge"]',
-
-                '[class*="viewerBadge_container"]',
-
-                '[data-testid="stAppDeployButton"]',
-
-                'a[href*="streamlit.io"]'
-
-            ];
-
-
-            selectors.forEach(function(selector) {
-
-                doc
-                .querySelectorAll(selector)
-                .forEach(function(el) {
-
-                    el.style.setProperty(
-                        "display",
-                        "none",
-                        "important"
-                    );
-
-                    el.style.setProperty(
-                        "visibility",
-                        "hidden",
-                        "important"
-                    );
-
+                doc.querySelectorAll(
+                    '[class*="viewerBadge"], [class*="ViewerBadge"], ' +
+                    '[class*="stAppViewerBadge"], [data-testid="stAppViewerBadge"], ' +
+                    '[data-testid="stAppDeployButton"], [class*="stDeployButton"], ' +
+                    '[class*="stAppDeployButton"], a[href*="streamlit.io"], ' +
+                    'a[href*="streamlit.app"]'
+                ).forEach(function (el) {
+                    el.style.setProperty("display", "none", "important");
+                    el.style.setProperty("visibility", "hidden", "important");
+                    el.style.setProperty("opacity", "0", "important");
+                    el.style.setProperty("pointer-events", "none", "important");
                 });
 
-            });
+                doc.querySelectorAll("body *").forEach(function (el) {
+                    const t = (el.innerText || el.textContent || "")
+                        .replace(/\s+/g, " ")
+                        .trim()
+                        .toLowerCase();
 
-        } catch (e) {}
+                    if (
+                        t === "hosted with streamlit" ||
+                        t.includes("hosted with streamlit") ||
+                        t === "created by awadq11" ||
+                        t.includes("created by awadq11")
+                    ) {
+                        let p = el;
+                        for (let i = 0; i < 8 && p; i++) {
+                            p.style.setProperty("display", "none", "important");
+                            p.style.setProperty("visibility", "hidden", "important");
+                            p.style.setProperty("opacity", "0", "important");
+                            p = p.parentElement;
+                        }
+                    }
+                });
+            } catch (e) {}
+        }
 
-    }, 100);
-
+        hide();
+        setTimeout(hide, 500);
+        setTimeout(hide, 1500);
+        setTimeout(hide, 3000);
+        setTimeout(hide, 6000);
+    })();
     </script>
     """,
     height=0,
