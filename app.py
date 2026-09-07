@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import base64
+import streamlit.components.v1 as components
 from database import get_db_connection, init_db
 from monitor import fetch_and_store_rss, classify_news
 
@@ -13,7 +14,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# كود CSS المحدث لإخفاء الشارة الحمراء وتلوين العبارة باللون الأحمر
+# كود CSS المحدث لإخفاء الشارة وتلوين عنوان البحث باللون الأحمر
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
@@ -198,3 +199,23 @@ if not df.empty:
         st.download_button("📄 تحميل التقرير الرسمي (HTML / طباعة)", data=html_report, file_name="Report.html", mime="application/html", use_container_width=True)
 else:
     st.warning("⚠️ لا توجد أخبار مرصودة حالياً.")
+
+# كود جافا سكريبت في نهاية الملف لإزالة الشارة العائمة بشكل نهائي
+components.html(
+    """
+    <script>
+    const removeBadge = () => {
+        try {
+            const doc = window.parent.document;
+            const badges = doc.querySelectorAll('.viewerBadge_container__1QSob, div[class*="viewerBadge"], a[href*="streamlit.cloud"]');
+            badges.forEach(el => {
+                el.style.display = 'none';
+                el.remove();
+            });
+        } catch(e) {}
+    };
+    setInterval(removeBadge, 50);
+    </script>
+    """,
+    height=0,
+)
