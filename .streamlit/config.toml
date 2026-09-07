@@ -1,0 +1,7 @@
+[client]
+toolbarMode = "developer"
+
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = true
