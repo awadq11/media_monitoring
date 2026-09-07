@@ -14,7 +14,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# كود CSS المحدث للتنسيقات وتغطية الشارة العائمة في الزاوية نهائياً
+# كود CSS المحدث لتنسيق التطبيق والغطاء الواسع لتغطية الشارة بالكامل
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
@@ -33,16 +33,16 @@ st.markdown("""
     .sub-banner { background: linear-gradient(135deg, #1B3B2B 0%, #0d1e15 100%); padding: 20px; border-radius: 12px; border: 1px solid #28543d; margin-bottom: 25px; text-align: center; color: #f0f4f1; }
     .red-search-label { color: #ff4b4b; font-weight: 700; font-size: 1.1rem; }
 
-    /* طبقة تغطية نهائية فوق شارة ستريملايت في الزاوية السفلية اليمنى */
+    /* غطاء بصري واسع ومحكم يغطي الزاوية السفلية اليمنى بالكامل */
     body::after {
         content: "";
         position: fixed;
         bottom: 0;
         right: 0;
-        width: 160px;
-        height: 55px;
+        width: 320px;
+        height: 90px;
         background-color: #0e1117; 
-        z-index: 999999;
+        z-index: 2147483647 !important;
         pointer-events: none;
     }
     </style>
